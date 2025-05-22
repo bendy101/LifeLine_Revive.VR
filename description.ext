@@ -1,0 +1,72 @@
+class Header
+{
+//	gameType = Coop;
+	minPlayers = 1;
+	maxPlayers = 6;
+};
+
+dev = "Lifeline";
+author = "Lifeline";
+onLoadName = "Lifeline Revive";
+
+enableDebugConsole[] = {"76561198024041042", "76561198073743769", "76561198289769914", "76561199244721981", "76561197990597512"};
+
+respawnOnStart = -1;
+// respawnDialog = 1;
+
+// disabledAI = 0; //fill empty player slots with AI
+
+class CfgSounds {
+sound = [];
+#include "Lifeline_Revive\sound\Lifeline_Sound.hpp"
+};
+
+class CfgDiary
+{
+    class Sections
+    {
+        class Players
+        {
+            entries[] += {"MissionType"};
+        };
+    };
+
+    class Entries
+    {
+        class MissionType
+        {
+            title = "Mission Type";
+            content = "This is where you describe the mission type.";
+        };
+    };
+};
+// mission end messages just for debugging
+
+class CfgDebriefing
+{
+        class captivebug
+        {
+            title = "Captive Bug Detected";
+            subtitle = "";
+            description = "Captive Bug Detected.";
+            pictureBackground = "";
+            picture = "b_inf";
+            pictureColor[] = { 0.0, 0.3, 0.6, 1 };
+        };
+        class damagebug
+        {
+            title = "Damage Bug Detected. Invincible unit.";
+            subtitle = "";
+            description = "Damage Bug Detected. Invincible unit.";
+            pictureBackground = "";
+            picture = "b_inf"; 
+            pictureColor[] = { 0.0, 0.3, 0.6, 1 }; 
+        };
+};
+
+// ============= RADIO ============
+// class CfgRadio
+// {
+// #include "Lifeline_Revive\sound\Lifeline_Radio.hpp"
+// };
+
