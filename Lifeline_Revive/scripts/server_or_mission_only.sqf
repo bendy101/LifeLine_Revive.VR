@@ -11,8 +11,6 @@ diag_log "======================================== server_or_mission_only.sqf ==
 diag_log "============================================================================================================='"; 
 diag_log "============================================================================================================='"; 
 
-Lifeline_mod = false;
-
 	//emulate the MOD version where CBA settings only exist if ACE is loaded or not. 
 	if (Lifeline_ACEcheck_ == false) then {
 		Lifeline_ACE_vanillaFAK = nil;

@@ -23,11 +23,11 @@ ________________________________________________________________________________
 	Select the scope or which units are affected.
 
 	1 = Group
-	2 = Playable Slots
+	2 = Playable Slots (plus player group)
 	3 = Side
 	4 = Choose with menu (won't work with dedicated server)
 																																			*/
-	Lifeline_Scope = 3; 																													/*
+	Lifeline_Scope = 4; 																													/*
 ____________________________________________________________________________________________________________________________________________
 
 	Select protection while reviving (and medic within 20 metres of incap). 
@@ -60,7 +60,7 @@ ________________________________________________________________________________
 	i.e. If you have this set to 8, then maximum damage equals 8 bandages. Half damage will equal 4 bandages.
 	*Set this to 1 if you want fastest revive: only 1 "bandage" needed regardless of damage.												*/
 
-	Lifeline_BandageLimit = 8; 			// IGNORED FOR ACE VERSION
+	Lifeline_BandageLimit = 4; 			// IGNORED FOR ACE VERSION
 																																			/*
 __________________________________________________________________________________________________________________________________________ 	
 
@@ -93,14 +93,14 @@ ________________________________________________________________________________
 	Auto recover. % Chance to regain consciousness. 
 	Depends on damage also. If you have cardiac arrest, auto revive cannot happen.															*/
 
-	Lifeline_autoRecover = 0; 			// Percentage		// IGNORED FOR ACE VERSION. 
+	Lifeline_autoRecover = 30; 			// Percentage		// IGNORED FOR ACE VERSION. 
 																																			/*
 ____________________________________________________________________________________________________________________________________________ 
 
 	Cardiac arrest likelihood if damage high enough.	
 	*Ignored if Bandage Range = 1, due to CPR not used.																						*/
 
-	Lifeline_CPR_likelihood = 0; 		// Percentage		// IGNORED FOR ACE VERSION. 	
+	Lifeline_CPR_likelihood = 25; 		// Percentage		// IGNORED FOR ACE VERSION. 	
 																																			/*
 ____________________________________________________________________________________________________________________________________________ 
 
@@ -154,12 +154,12 @@ ________________________________________________________________________________
 
 	Chance of smoke, percentage. 																											*/
 
-	Lifeline_SmokePerc = 0;																													/*
+	Lifeline_SmokePerc = 30;																													/*
 ____________________________________________________________________________________________________________________________________________
 
 	Chance of smoke, percentage: when enemies are nearby. This over-rides above setting.													*/
 
-	Lifeline_EnemySmokePerc = 100;																											/*
+	Lifeline_EnemySmokePerc = 70;																											/*
 																																			/*
 ____________________________________________________________________________________________________________________________________________
 
@@ -189,7 +189,7 @@ ________________________________________________________________________________
 	2 = British Empire: British and Australian.
 	3 = American. USA.
 																																			*/
-	Lifeline_Voices = 1;																													/*
+	Lifeline_Voices = 2;																													/*
 
 ================================================================================================================================================================
                  HUD & MAP																															 HUD & MAP
@@ -248,7 +248,7 @@ ________________________________________________________________________________
 
 	Show markers on map of incapacitated and dead
 																																			*/
-	Lifeline_Map_mark = true; 		
+	Lifeline_Map_mark = false; 		
 																																			/*
 ____________________________________________________________________________________________________________________________________________
 
@@ -315,7 +315,16 @@ ________________________________________________________________________________
 	*Note if there is no vanilla Arma 3 medic in the squad, then the trait will be set to last unit in squad.
 	            																															*/
 
-	Lifeline_Dedicated_Medic = true;																											
+	Lifeline_Dedicated_Medic = false;																										/*
+____________________________________________________________________________________________________________________________________________
+
+	Medic Hit the Dirt
+	1 = When enemy is nearby < 500m
+	2 = When enemy is is view & < 500m
+	3 = Random of the above two options
+	            																															*/
+
+	Lifeline_EnemyCloseByType = 1;																											
 	                                                                                                                                        /*
 
 ================================================================================================================================================================
@@ -324,7 +333,7 @@ ________________________________________________________________________________
 
 	Include OPFOR in Revive
 																																			*/
-	Lifeline_Include_OPFOR = true;																											/*
+	Lifeline_Include_OPFOR = false;																											/*
 
 ____________________________________________________________________________________________________________________________________________
 
@@ -333,14 +342,14 @@ ________________________________________________________________________________
 	1 = Moderate. A bit more casual, instant death still happens, such as sniper headshots and explosions.
 	2 = Realism. Instant death happens on a realistic level.
 																																			*/	
-	Lifeline_InstantDeathOPFOR = 0;  // IGNORED FOR ACE VERSION.																		
+	Lifeline_InstantDeathOPFOR = 2;  // IGNORED FOR ACE VERSION.																		
 																																			/*
 
 ____________________________________________________________________________________________________________________________________________
 
 	Idle Crouch. When a unit is standing and idle, it will temporarily go into "crouch" mode.
 				                                                                                                                            */
-	Lifeline_Idle_CrouchOPFOR = true;
+	Lifeline_Idle_CrouchOPFOR = false;
 																																		    /*
 ================================================================================================================================================================
                  BONUS. Not related to reviving, but very useful for workshop missions.  															     BONUS								
@@ -379,7 +388,7 @@ ________________________________________________________________________________
 	*This only applies to "aware" behaviour mode and posture set to "auto" - other modes need freedom to do whatever.	
 																																			*/
 	Lifeline_Idle_Crouch = true;																											
-	Lifeline_Idle_Crouch_Speed = 0;  //speed for triggering "crouch". 0 = not moving. 1-5 is 'very slow' to 'slow'
+	Lifeline_Idle_Crouch_Speed = 1;  //speed for triggering "crouch". 0 = not moving. 1-5 is 'very slow' to 'slow'
 																																			/*
 ____________________________________________________________________________________________________________________________________________ 
 
@@ -400,7 +409,7 @@ ________________________________________________________________________________
 
 	AI skill level. The skill level of AI in your squad or side. From 0 to 1.  0 means ignore and use mission setting.						*/
 
-	Lifeline_AI_skill = 0;																													/*
+	Lifeline_AI_skill = 1;																													/*
  ____________________________________________________________________________________________________________________________________________
 
 	Fatigue. (non ACE)
@@ -440,7 +449,7 @@ ________________________________________________________________________________
 
 	Sometime AI in Arma is retarded. This stops them being idle after 6 seconds
 																																			*/
-	Lifeline_Idle_Medic_Stop = false;																										/*
+	Lifeline_Idle_Medic_Stop = true;																										/*
 
 ____________________________________________________________________________________________________________________________________________
 
@@ -448,14 +457,14 @@ ________________________________________________________________________________
 	Usually 30 seconds each incap + medic pair.
 	Its a safeguard against medics not making it. 
 																																			*/
-	Lifeline_HUD_names_pairtime = true;																										/*
+	Lifeline_HUD_names_pairtime = false;																										/*
 
 ____________________________________________________________________________________________________________________________________________ 
 
 	Include OPFOR in HUD list of revive pairs.
 	When you include OPFOR for revive, you can turn this on to show the OPFOR HUD list.										
 																																			*/
-	Lifeline_ShowOpfor_HUDlist = true;																										/*
+	Lifeline_ShowOpfor_HUDlist = false;																										/*
 
 ____________________________________________________________________________________________________________________________________________ 
 	BETA version of medic journey to incap.
@@ -473,5 +482,6 @@ ________________________________________________________________________________
 
 */
 
+Lifeline_mod = false;
 [] execvm "Lifeline_Revive\scripts\server_or_mission_only.sqf"; 	// this declares variables that a mod version usually does
 [] execvm "Lifeline_Revive\scripts\fix_other_revive_systems.sqf"; 	// main startup script
