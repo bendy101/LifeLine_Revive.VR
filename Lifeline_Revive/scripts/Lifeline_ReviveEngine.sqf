@@ -202,7 +202,9 @@ if (isServer) then {
 		publicVariable "Lifeline_Side";
 	} else {
 		_players = allPlayers - entities "HeadlessClient_F";
-		Lifeline_Side = side (_players select 0);		publicVariable "Lifeline_Side"; // THIS IS A SINGLE SIDE. NEED TO UPDATE TO ARRAY VERSION  FOR ALLIES.
+		Lifeline_Side = side (_players select 0); //
+		publicVariable "Lifeline_Side"; // THIS IS A SINGLE SIDE. NEED TO UPDATE TO ARRAY VERSION  FOR ALLIES.
+		
 	};
 
 	Lifeline_OPFOR_Sides = Lifeline_Side call BIS_fnc_enemySides;
@@ -314,7 +316,7 @@ if (isServer) then {
 							Lifeline_UnitVoicesCount = count Lifeline_UnitVoices;
 							};
 						Lifeline_UnitVoicesCount = Lifeline_UnitVoicesCount - 1;
-					};				
+					};	
 
 				//set skill for your AI Units	
 				if (Lifeline_AI_skill > 0) then {
@@ -366,7 +368,8 @@ if (isServer) then {
 				if ((_x getVariable ["Lifeline_Grp",""]) == "") then {
 					_goup = group _x;
 					_x setVariable ["Lifeline_Grp", _goup, true];
-					_x setVariable ["LifelinePairTimeOut",0,true];				};
+					_x setVariable ["LifelinePairTimeOut",0,true];				
+				};
 
 				// Add vehicle to Lifeline_All_Units -- this should be OFF. Only need to know when medic is selected.
 				/* if !(assignedvehicle _x isEqualTo (_x getVariable ["AssignedVeh", objNull])) then {
