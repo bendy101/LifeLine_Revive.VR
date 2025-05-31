@@ -388,7 +388,7 @@ ________________________________________________________________________________
 	*This only applies to "aware" behaviour mode and posture set to "auto" - other modes need freedom to do whatever.	
 																																			*/
 	Lifeline_Idle_Crouch = true;																											
-	Lifeline_Idle_Crouch_Speed = 1;  //speed for triggering "crouch". 0 = not moving. 1-5 is 'very slow' to 'slow'
+	Lifeline_Idle_Crouch_Speed = 5;  //speed for triggering "crouch". 0 = not moving. 1-5 is 'very slow' to 'slow'
 																																			/*
 ____________________________________________________________________________________________________________________________________________ 
 
