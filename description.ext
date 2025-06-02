@@ -61,6 +61,15 @@ class CfgDebriefing
             pictureBackground = "";
             picture = "b_inf"; 
             pictureColor[] = { 0.0, 0.3, 0.6, 1 }; 
+        };        
+        class bugfound
+        {
+            title = "BUG FOUND";
+            subtitle = "";
+            description = "BUG FOUND";
+            pictureBackground = "";
+            picture = "b_inf"; 
+            pictureColor[] = { 0.0, 0.3, 0.6, 1 }; 
         };
 };
 

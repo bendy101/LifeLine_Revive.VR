@@ -202,9 +202,7 @@ if (isServer) then {
 		publicVariable "Lifeline_Side";
 	} else {
 		_players = allPlayers - entities "HeadlessClient_F";
-		Lifeline_Side = side (_players select 0); //
-		publicVariable "Lifeline_Side"; // THIS IS A SINGLE SIDE. NEED TO UPDATE TO ARRAY VERSION  FOR ALLIES.
-		
+		Lifeline_Side = side (_players select 0);		publicVariable "Lifeline_Side"; // THIS IS A SINGLE SIDE. NEED TO UPDATE TO ARRAY VERSION  FOR ALLIES.
 	};
 
 	Lifeline_OPFOR_Sides = Lifeline_Side call BIS_fnc_enemySides;
@@ -368,8 +366,7 @@ if (isServer) then {
 				if ((_x getVariable ["Lifeline_Grp",""]) == "") then {
 					_goup = group _x;
 					_x setVariable ["Lifeline_Grp", _goup, true];
-					_x setVariable ["LifelinePairTimeOut",0,true];				
-				};
+					_x setVariable ["LifelinePairTimeOut",0,true];				};
 
 				// Add vehicle to Lifeline_All_Units -- this should be OFF. Only need to know when medic is selected.
 				/* if !(assignedvehicle _x isEqualTo (_x getVariable ["AssignedVeh", objNull])) then {
@@ -877,8 +874,13 @@ if (isServer) then {
 											};
 											_x setVariable ["ReviveInProgress",0,true]; 
 											_x setVariable ["Lifeline_AssignedMedic", [], true]; // added
-											//these two variables below are just for SOG AI to avoid clashes. 										
-											_x setVariable ["isInjured",false,true]; 											
+
+											// these two variables below are just for SOG AI to avoid clashes. 
+											if (Lifeline_SOGAIcheck_) then {
+												_x setVariable ["isInjured",false,true]; 
+												_x call Lifeline_SOGAI_Continue;
+											}; 
+								            // -------------------- 
 											// _x setVariable ["isMedic",false,true]; // keep off
 											// -------- 
 										};
@@ -1099,72 +1101,6 @@ if (isServer) then {
 			// Check if medic limit is reached. 
 			_medic_under_limit = true;
 
-			/*  // ======= MEDIC NUMERICAL LIMITS LOGIC ======== 
-			if (Lifeline_Medic_Limit >= 0 && !(group _incap in Lifeline_Group_Mascal)) then {
-				// Subtract both incapacitated units and players from the group
-				_incap_group_units = (units group _incap) - Lifeline_incapacitated - (units group _incap select {isPlayer _x || !alive _x || lifeState _x == "DEAD"}); // exclude dead units
-				_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach _incap_group_units; 
-
-				if (count _incap_group_units > 0) then {
-					Lifeline_healthy_units = _incap_group_units;
-				};
-				_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
-
-				_count_current_medics = [group _incap] call Lifeline_count_group_medics;
-				// Standard group limits (1, 2, 3)
-				if (Lifeline_Medic_Limit == 1 && _count_current_medics > 0) then {
-					_medic_under_limit = false;	
-				};
-				if (Lifeline_Medic_Limit == 2 && _count_current_medics > 1) then {
-					_medic_under_limit = false;
-				};
-				if (Lifeline_Medic_Limit == 3 && _count_current_medics > 2) then {
-					_medic_under_limit = false;
-				};
-				// Group limits plus unsuppressed units (4, 5, 6)
-				if (Lifeline_Medic_Limit >= 4 && Lifeline_Medic_Limit <= 6) then {
-					_limit_per_group = Lifeline_Medic_Limit - 3; // Convert 4->1, 5->2, 6->3
-					// Check for the count of medics and if we've reached the base limit
-					if (_count_current_medics >= _limit_per_group) then {
-						// When we've reached the base limit, we'll only allow unsuppressed units to be medics
-						_suppressed_units = Lifeline_healthy_units select {getSuppression _x > 0.1};
-						// _suppressed_units = Lifeline_healthy_units select {_x getVariable ["testbaby",true] == true}; // TESTER
-						_unsuppressed_units = Lifeline_healthy_units - _suppressed_units;
-						if (Lifeline_Revive_debug) then {
-							diag_log format ["PRIMARY LOOP [1387] Lifeline_Medic_Limit %1 reached (%2 group medics). %3 suppressed units excluded, %4 unsuppressed units still eligible.", 
-								Lifeline_Medic_Limit, _count_current_medics, count _suppressed_units, count _unsuppressed_units];
-						};
-						// If there are no unsuppressed units, we'll check if all units are suppressed
-						if (count _unsuppressed_units == 0 && count _suppressed_units > 0) then {
-							// All units are suppressed, so we'll still use the first setting logic
-							if (Lifeline_Revive_debug) then {
-							};
-							// Match the behavior of settings 1-3
-							if (_limit_per_group == 1 && _count_current_medics > 0) then {
-								_medic_under_limit = false;
-							};
-							if (_limit_per_group == 2 && _count_current_medics > 1) then {
-								_medic_under_limit = false;
-							};
-							if (_limit_per_group == 3 && _count_current_medics > 2) then {
-								_medic_under_limit = false;
-							};
-						} else {
-							// We have unsuppressed units available, use those
-							Lifeline_healthy_units = _unsuppressed_units;
-							_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach _unsuppressed_units; 
-						};
-					};
-				};
-			} else {
-				Lifeline_healthy_units = Lifeline_All_Units - Lifeline_incapacitated;
-				_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
-			}; 
-
-			_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
-
-			// =========================== END OF MEDIC NUMERICAL LIMITS LOGIC ================================  */
-
 			_medic_under_limit = [_incap,false] call Lifeline_Medic_Num_Limit;
 			_dedicated_medic = false;
 
@@ -1179,21 +1115,6 @@ if (isServer) then {
 			{
 				// _blacklist = _x call Lifeline_Blacklist_Check;
 				if (
-					// !(side group _x == civilian) 
-					// && !isPlayer _x 
-					// && !([_x] call Lifeline_Blacklist_Check)
-					// && !(_x in Lifeline_Process) 
-					// && ((_x distance _incap) < Lifeline_LimitDist) 
-					// && !(currentWeapon _x == secondaryWeapon _x && currentWeapon _x != "") //make sure unit is not about to fire launcher. This comes first.
-					// && !(((assignedTarget _x) isKindOf "Tank") && secondaryWeapon _x != "") //check unit did not get order to hunt tank
-					// && !(((getAttackTarget _x) isKindOf "Tank") && secondaryWeapon _x != "") //check unit is not hunting a tank
-					// && (_x getVariable ["ReviveInProgress",0]) == 0 
-					// && _x getVariable ["Lifeline_AssignedMedic",[]] isEqualTo []
-					// && (_x getVariable ["LifelinePairTimeOut", 0]) == 0
-					// && (lifestate _x != "INCAPACITATED")
-					// && _x getVariable ["Lifeline_ExitTravel", false] == false
-					// && (side (group _x) == side (group _incap)) // TEST FOR OPFOR
-					// (!Lifeline_Dedicated_Medic || (Lifeline_Dedicated_Medic && (_x getUnitTrait "medic" || _count_healthy_group > 0))) &&
 					(!Lifeline_Dedicated_Medic || (Lifeline_Dedicated_Medic && (_x getUnitTrait "medic" || _dedi_in_action || !_dedi_medic_available))) &&
 					_medic_under_limit &&
 					[_x,_incap] call Lifeline_check_available_medic
@@ -1205,10 +1126,6 @@ if (isServer) then {
 			// } foreach Lifeline_medicsMASCALcheck;
 			// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
 			_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medics2choose; 
-
-           	// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medicsMASCALcheck; 
-            // _Lifeline_medicsMASCALcheck = Lifeline_medicsMASCALcheck select {(side group _x) == (_incap_side)};
-			// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach _Lifeline_medicsMASCALcheck; 
 
 			_voice = "";
 
@@ -1399,32 +1316,13 @@ if (isServer) then {
 				}; */
 
 				_incap setVariable ["ReviveInProgress",0,true];
-				_incap setVariable ["isInjured",false,true]; //just for SOG AI to avoid clashes. 
 
-				// SWITCH LOGIC IN REJECT MEDIC 
-
-			/* 	if ((!Lifeline_PVPstatus && Lifeline_Include_OPFOR) || Lifeline_PVPstatus) then {
-					if (_incap_side == Lifeline_Side) then {
-						_check_both_sides pushBackUnique 1;
-						// Find first unit from OPFOR side
-						_opforUnits = Lifeline_incaps2choose select {side group _x in Lifeline_OPFOR_Sides};
-						if (count _opforUnits > 0) then {
-							Lifeline_side_switch = 2;
-							// _sleep = 0.2;
-							// _sleep = 1;
-						};
-					};
-					if (_incap_side in Lifeline_OPFOR_Sides) then {
-						_check_both_sides pushBackUnique 2;
-						// Find first unit from BLUFOR side
-						_bluforUnits = Lifeline_incaps2choose select {side group _x == Lifeline_Side};
-						if (count _bluforUnits > 0) then {
-							Lifeline_side_switch = 1;
-							// _sleep = 0.2;
-							// _sleep = 1;
-						};
-					};
-				}; */
+				// these two variables below are just for SOG AI to avoid clashes. // dont think this is needed
+				/* if (Lifeline_SOGAIcheck_) then {
+					_incap setVariable ["isInjured",false,true]; 
+					_incap call Lifeline_SOGAI_Continue;
+				};  */
+            	// -------------------- 
 
 				_medic = objNull;
 			};
@@ -1489,10 +1387,20 @@ if (isServer) then {
 					publicVariable "Lifeline_Process";
 					_incap setVariable ["ReviveInProgress",3,true]; 
 					_medic setVariable ["ReviveInProgress",1,true]; 
+
 					//these two variables below are just for SOG AI to avoid clashes. 
-					_incap setVariable ["isInjured",true,true]; 
-					_medic setVariable ["isMedic",true,true]; 
-                    // -------- 
+					// _incap setVariable ["isInjured",true,true]; 
+					// _medic setVariable ["isMedic",true,true]; 
+                    // // -------- 
+					// these two variables below are just for SOG AI to avoid clashes. 
+					if (Lifeline_SOGAIcheck_) then {
+						_incap setVariable ["isInjured",true,true]; 
+						_medic setVariable ["isMedic",true,true];
+						_incap call Lifeline_SOGAI_Break;
+						_medic call Lifeline_SOGAI_Break;
+					}; 
+					// -------------------- 
+
 					if (lifestate _medic != "INCAPACITATED" && !(_medic getVariable ["Lifeline_Captive_Delay",false])) then {
 						_medic setVariable ["Lifeline_Captive",(captive _medic),true]; //2025
 					};
