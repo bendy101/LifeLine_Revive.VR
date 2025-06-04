@@ -302,7 +302,7 @@ ________________________________________________________________________________
 	6 = 3 per group + any not in combat             					
 																																			*/
 
-	Lifeline_Medic_Limit = 0;																												
+	Lifeline_Medic_Limit = -1;																												
 
 	                                                                                                                                        /*
 	*Note: these limits and the blacklist above are unblocked when MASCAL (mass casualty) has happened.		

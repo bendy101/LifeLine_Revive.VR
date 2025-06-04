@@ -2,7 +2,7 @@ diag_log "                                                                      
 diag_log "                                                                                   			               '"; 
 diag_log "============================================================================================================='";
 diag_log "============================================================================================================='";
-diag_log "========================================== Lifeline_ReviveEngine.sqf ja ==========================================='";
+diag_log "========================================== Lifeline_ReviveEngine.sqf ==========================================='";
 diag_log format ["========================================== %1     %2 ==========================================='", Lifeline_Version, Lifeline_Version_no];
 diag_log "============================================================================================================='";
 
@@ -1014,7 +1014,7 @@ if (isServer) then {
 
 		Lifeline_incaps2choose = Lifeline_incapacitated select {!(_x in Lifeline_Process) && (lifestate _x == "INCAPACITATED") && (rating _x > -2000)};
 
-		_diag_array = ""; {_diag_array = _diag_array + name _x + ":" + str group _x + ", " } foreach Lifeline_incaps2choose; 
+		// _diag_array = ""; {_diag_array = _diag_array + name _x + ":" + str group _x + ", " } foreach Lifeline_incaps2choose; 
 
 		if (count Lifeline_incaps2choose > 0 ) then {
 
@@ -1059,34 +1059,6 @@ if (isServer) then {
 				};
 			};
 
-			// Create arrays for side switching logic
-			// private _opforUnits = Lifeline_incaps2choose select {side group _x in Lifeline_OPFOR_Sides};
-			// private _bluforUnits = Lifeline_incaps2choose select {side group _x == Lifeline_Side};
-
-			/* if (Lifeline_side_switch == 0) then {
-			 _incap = (Lifeline_incaps2choose select 0);
-			 _incaptemp = _incap;
-			 _incap_side = side group _incap; // even though this is declared again below, it is need for the conditionals here.
-			}; */
-
-			//=================================================
-
-		/* 	if (Lifeline_side_switch > 0) then {
-				if (_incap_side == Lifeline_Side) then {
-						// Find first unit from OPFOR side
-						if (count _opforUnits > 0) then {
-							_incap = _opforUnits select 0;
-						};
-				};
-				if (_incap_side in Lifeline_OPFOR_Sides) then {
-					// Find first unit from BLUFOR side
-					if (count _bluforUnits > 0) then {
-						_incap = _bluforUnits select 0;
-					};
-				};
-				Lifeline_side_switch = 0;
-			}; */
-
 			_incap_side = side group _incap; 
 
 			if (Lifeline_Revive_debug) then {[_incap,"SELECTED INCAP"] call serverSide_unitstate};
@@ -1116,8 +1088,8 @@ if (isServer) then {
 				// _blacklist = _x call Lifeline_Blacklist_Check;
 				if (
 					(!Lifeline_Dedicated_Medic || (Lifeline_Dedicated_Medic && (_x getUnitTrait "medic" || _dedi_in_action || !_dedi_medic_available))) &&
-					_medic_under_limit &&
-					[_x,_incap] call Lifeline_check_available_medic
+					_medic_under_limit
+					 && [_x,_incap] call Lifeline_check_available_medic
 				) then {
 					Lifeline_medics2choose pushBackUnique _x;
 				};
@@ -1125,7 +1097,7 @@ if (isServer) then {
 
 			// } foreach Lifeline_medicsMASCALcheck;
 			// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
-			_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medics2choose; 
+			// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medics2choose; 
 
 			_voice = "";
 
@@ -1135,31 +1107,37 @@ if (isServer) then {
 				// 1. First sort all medics by distance
 				Lifeline_medics = [Lifeline_medics2choose, [], {_incap distance _x}, "ASCEND"] call BIS_fnc_sortBy;
 
-				// 2. Create an array of all groups in sorted order
-				_medicGroups = [];
-				{
-					_grp = group _x;
-					if !(_grp in _medicGroups) then {
-						_medicGroups pushBack _grp;
-					};
-				} forEach Lifeline_medics;
+				if (Lifeline_Medic_Limit > -1) then {
 
-				// 3. Create a new sorted array, processing each group's members by suppression
-				_sortedMedics = [];
-				{
-					_currentGroup = _x;
-					// Get all medics from current group
-					_groupMedics = Lifeline_medics select {group _x == _currentGroup};
-					// Sort them by suppression
-					_groupMedics = [_groupMedics, [], {getSuppression _x}, "ASCEND"] call BIS_fnc_sortBy;
-					// Add them to final array
-					_sortedMedics append _groupMedics;
-				} forEach _medicGroups;
+					// 2. Create an array of all groups in sorted order
+					_medicGroups = [];
+					{
+						_grp = group _x;
+						if !(_grp in _medicGroups) then {
+							_medicGroups pushBack _grp;
+						};
+					} forEach Lifeline_medics;
 
-				// Update the Lifeline_medics array with our new sorted order
-				Lifeline_medics = _sortedMedics;
+					// 3. Create a new sorted array, processing each group's members by suppression
+					_sortedMedics = [];
+					{
+						_currentGroup = _x;
+						// Get all medics from current group
+						_groupMedics = Lifeline_medics select {group _x == _currentGroup};
+						// Sort them by suppression
+						_groupMedics = [_groupMedics, [], {getSuppression _x}, "ASCEND"] call BIS_fnc_sortBy;
+						// Add them to final array
+						_sortedMedics append _groupMedics;
+					} forEach _medicGroups;
 
-				_arraynum = 0;
+					// Update the Lifeline_medics array with our new sorted order
+					Lifeline_medics = _sortedMedics;
+
+				};
+
+				// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medics; 
+
+				// _arraynum = 0;
 				_numMedics = count Lifeline_medics;
 				_arraynum = [0]; // MAKE IT ALWAYS CLOSEST
 				_medic = Lifeline_medics select (selectRandom _arraynum);
@@ -1187,32 +1165,6 @@ if (isServer) then {
 				// _sleep = 0.5; // faster queue when found medic
 				_sleep = 0.2; // faster queue when found medic
 
-				/* if (_medic == objNull) then {			// SWITCH LOGIC IN REJECT MEDIC 
-
-					if ((!Lifeline_PVPstatus && Lifeline_Include_OPFOR) || Lifeline_PVPstatus) then {
-						if (_incap_side == Lifeline_Side) then {
-							_check_both_sides pushBackUnique 1;
-							// Find first unit from OPFOR side
-							_opforUnits = Lifeline_incaps2choose select {side group _x in Lifeline_OPFOR_Sides};
-							if (count _opforUnits > 0) then {
-								Lifeline_side_switch = 2;
-								// _sleep = 0.2;
-								_sleep = 1;
-							};
-						};
-						if (_incap_side in Lifeline_OPFOR_Sides) then {
-							_check_both_sides pushBackUnique 2;
-							// Find first unit from BLUFOR side
-							_bluforUnits = Lifeline_incaps2choose select {side group _x == Lifeline_Side};
-							if (count _bluforUnits > 0) then {
-								Lifeline_side_switch = 1;
-								// _sleep = 0.2;
-								_sleep = 1;
-							};
-						};
-					};
-				}; */
-
 				// sleep 0.2;
 
 				if (Lifeline_Revive_debug) then {[_medic,"SELECTED MEDIC"] call serverSide_unitstate};
@@ -1239,17 +1191,8 @@ if (isServer) then {
 
 				Lifeline_medicsMASCALcheck = Lifeline_healthy_units select {(side group _x) == (_incap_side) && [_x,_incap] call Lifeline_check_medics_MASCAL};
 				Lifeline_medicsMASCALcheckTOTAL = (Lifeline_All_Units - Lifeline_incapacitated) select {(side group _x) == (_incap_side) && [_x,_incap] call Lifeline_check_medics_MASCAL};
-				_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
-				_diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medicsMASCALcheck; 
-
-									//TEST
-				/* 	if (count Lifeline_incapacitated > 1) then {
-						private _firstUnit = Lifeline_incapacitated select 0;
-						Lifeline_incapacitated deleteAt 0;
-						Lifeline_incapacitated pushBack _firstUnit;
-						publicVariable "Lifeline_incapacitated";
-						// Optional: Log the change
-					}; */
+				// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_healthy_units; 
+				// _diag_array = ""; {_diag_array = _diag_array + name _x + ", " } foreach Lifeline_medicsMASCALcheck; 
 
 				//Check if GROUP MASCAL  
 				if (count Lifeline_medicsMASCALcheck == 0) then {
