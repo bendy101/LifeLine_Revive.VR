@@ -27,6 +27,7 @@ if (isMultiplayer) then {
 	diag_log "mission init.sqf =================== PLAYER ENTERED ========================='";
 };
 
+/* 
 if (hasInterface) then {
 	waitUntil { findDisplay 1 != displayNull };
 	diag_log "mission init.sqf =================== MISSION BRIEF =========================='";
@@ -38,7 +39,7 @@ if (hasInterface) then {
 			player enableFatigue false;
         }];
     };
-};
+}; */
 
 // check for ACE medical
 if (isClass (configFile >> "cfgPatches" >> "ace_medical")) then {

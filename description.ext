@@ -11,7 +11,7 @@ onLoadName = "Lifeline Revive";
 
 enableDebugConsole[] = {"76561198024041042", "76561198073743769", "76561198289769914", "76561199244721981", "76561197990597512"};
 
-respawnOnStart = -1;
+// respawnOnStart = -1;
 // respawnDialog = 1;
 
 // disabledAI = 0; //fill empty player slots with AI

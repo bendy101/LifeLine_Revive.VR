@@ -429,6 +429,23 @@ ________________________________________________________________________________
 	0 = turn off.																															*/
 
 	Lifeline_cntdwn_disply = 300;																											/*
+____________________________________________________________________________________________________________________________________________
+
+	Reload loadout on respawn.
+
+	All the kit and gear that a unit previously had is reloaded on respawn.
+	Only for respawn missions.  																											*/
+
+	Lifeline_ReloadLoadout = true;																											/*
+
+____________________________________________________________________________________________________________________________________________
+
+	Prevent AI from respawning.
+
+	Some missions in the workshop are too easy, your AI always respawns. This will prevent them from respawning.
+	Only for respawn missions.  																											*/
+
+	Lifeline_PreventAIRespawn = false;																										/*
 
 ================================================================================================================================================================
                  DEBUGGING  																														 DEBUGGING
